@@ -6,7 +6,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import colors, { violet } from 'tailwindcss/colors'
+import colors from 'tailwindcss/colors'
 
 import {
   Card,
