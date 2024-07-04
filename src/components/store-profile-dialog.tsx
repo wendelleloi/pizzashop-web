@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -21,6 +21,8 @@ import { Label } from './ui/label'
 import { Textarea } from './ui/textarea'
 
 export function StoreProfileDialog() {
+  const queryClient = useQueryClient()
+
   const storeProfileSchema = z.object({
     name: z.string().min(1),
     description: z.string(),
@@ -47,6 +49,17 @@ export function StoreProfileDialog() {
   })
   const { mutateAsync: updateProfileFn } = useMutation({
     mutationFn: updateProfile,
+    onSuccess(_, { description, name }) {
+      const cached = queryClient.getQueryData(['managed-restaurant'])
+
+      if (cached) {
+        queryClient.setQueryData(['managed-restaurant'], {
+          ...cached,
+          name,
+          description,
+        })
+      }
+    },
   })
 
   async function handleUpdateProfile(data: StoreProfileSchema) {
